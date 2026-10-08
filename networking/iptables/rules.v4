@@ -1,0 +1,24 @@
+#
+# Located in /etc/iptables/rules.v4
+# 
+*filter
+:INPUT DROP [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Loopback and replies to traffic this host started
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# ICMP (ping, path MTU discovery)
+-A INPUT -p icmp -j ACCEPT
+
+# OSPF (IP protocol 89) from your LAN only
+-A INPUT -i eth0 -p 89 -s 10.70.90.0/24 -j ACCEPT
+
+# Services
+-A INPUT -p tcp --dport 22 -j ACCEPT
+-A INPUT -p tcp --dport 80 -j ACCEPT
+
+COMMIT
